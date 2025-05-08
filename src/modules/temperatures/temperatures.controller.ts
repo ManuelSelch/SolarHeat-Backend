@@ -31,6 +31,11 @@ export class TemperaturesController {
         }
     }
 
+    @Get("/status")
+    async getStatus() {
+        return await readStatus();
+    }
+
     private getTimestamp() {
         const now = new Date();
         const hours = now.getHours().toString().padStart(2, '0');
