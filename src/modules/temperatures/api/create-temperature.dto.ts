@@ -1,5 +1,4 @@
-declare type Temperature = {
-    id: number;
+export class CreateTemperatureDto {
     solar: number;
     tank: number;
     security: number;
