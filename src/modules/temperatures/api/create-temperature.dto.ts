@@ -1,6 +1,6 @@
 export class CreateTemperatureDto {
     solar: number;
-    tank: number;
+    pump: number;
     security: number;
     rel: number;
 }

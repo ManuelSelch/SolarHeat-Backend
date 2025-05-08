@@ -1,7 +1,7 @@
 declare type Temperature = {
     id: number;
     solar: number;
-    tank: number;
+    pump: number;
     security: number;
     rel: number;
 }
