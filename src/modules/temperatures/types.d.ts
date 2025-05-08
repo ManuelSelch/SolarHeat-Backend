@@ -5,3 +5,7 @@ declare type Temperature = {
     security: number;
     rel: number;
 }
+
+declare type Status = {
+    dif: number;
+}

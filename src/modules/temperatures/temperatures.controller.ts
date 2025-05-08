@@ -1,6 +1,12 @@
 import { Body, Controller, Get, Post } from '@nestjs/common';
 import { TemperatureRepository } from './infra/temperature.repository';
 import { CreateTemperatureDto } from './api/create-temperature.dto';
+import * as fs from 'fs/promises';
+
+async function readStatus(): Promise<Status> {
+    const raw = await fs.readFile(this.filePath, 'utf8');
+    return JSON.parse(raw);
+}
 
 @Controller('temperatures')
 export class TemperaturesController {
@@ -18,7 +24,7 @@ export class TemperaturesController {
         await this.temperatureRepo.create(createTemperature);
 
         return {
-            diff: 0,
+            dif: 0,
             timestamp: this.getTimestamp()
         }
     }
