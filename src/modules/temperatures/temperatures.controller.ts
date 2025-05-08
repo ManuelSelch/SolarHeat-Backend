@@ -23,8 +23,10 @@ export class TemperaturesController {
     async create(@Body() createTemperature: CreateTemperatureDto) {
         await this.temperatureRepo.create(createTemperature);
 
+        const status = await readStatus();
+
         return {
-            dif: 0,
+            dif: status.dif,
             timestamp: this.getTimestamp()
         }
     }
