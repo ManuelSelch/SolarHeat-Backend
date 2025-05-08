@@ -4,7 +4,7 @@ import { CreateTemperatureDto } from './api/create-temperature.dto';
 import * as fs from 'fs/promises';
 
 async function readStatus(): Promise<Status> {
-    const raw = await fs.readFile(this.filePath, 'utf8');
+    const raw = await fs.readFile("./data/status.json", 'utf8');
     return JSON.parse(raw);
 }
 
