@@ -8,4 +8,5 @@ declare type Temperature = {
 
 declare type Status = {
     dif: number;
+    time: number;
 }
