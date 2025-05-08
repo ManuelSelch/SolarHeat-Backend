@@ -8,6 +8,11 @@ async function readStatus(): Promise<Status> {
     return JSON.parse(raw);
 }
 
+async function  writeStatus(data: Status) {
+    await fs.writeFile("./data/status.json", JSON.stringify(data, null, 2));
+}
+
+
 @Controller('temperatures')
 export class TemperaturesController {
     constructor(
@@ -34,6 +39,13 @@ export class TemperaturesController {
     @Get("/status")
     async getStatus() {
         return await readStatus();
+    }
+
+    @Post("/dif")
+    async setDif(@Body() data: {dif: number}) {
+        let status = await readStatus();
+        status.dif = data.dif;
+        await writeStatus(status);
     }
 
     private getTimestamp() {
