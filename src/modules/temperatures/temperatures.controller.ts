@@ -1,7 +1,7 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
-import { TemperatureRepository } from './infra/temperature.repository';
+import { Body, Controller, Get, Post, Query } from '@nestjs/common';
 import { CreateTemperatureDto } from './api/create-temperature.dto';
 import * as fs from 'fs/promises';
+import { TemperaturesService } from './infra/temperatures.service';
 
 async function readStatus(): Promise<Status> {
     const raw = await fs.readFile("./data/status.json", 'utf8');
@@ -16,17 +16,17 @@ async function  writeStatus(data: Status) {
 @Controller('temperatures')
 export class TemperaturesController {
     constructor(
-        private temperatureRepo: TemperatureRepository
+        private temperaturesService: TemperaturesService
     ) {}
 
     @Get("/")
-    async findAll(): Promise<Temperature[]> {
-        return await this.temperatureRepo.findAll();
+    async findAll(@Query('range') range: 'day' | 'month' | 'year' = 'day',): Promise<Temperature[]> {
+        return await this.temperaturesService.findFiltered(range);
     }
 
     @Post("/")
     async create(@Body() createTemperature: CreateTemperatureDto) {
-        await this.temperatureRepo.create(createTemperature);
+        await this.temperaturesService.create(createTemperature);
 
         let status = await readStatus();
         status.time = Date.now();
