@@ -25,6 +25,33 @@
 
 [Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
 
+## Temperature history API
+
+`GET /temperatures` accepts these optional query parameters:
+
+- `range`: `day` (default), `month`, or `year`.
+- `date`: reference calendar date in strict `YYYY-MM-DD` format (years 1000–9999). If omitted, the current date is used.
+
+Examples:
+
+```text
+GET /temperatures?range=day&date=2026-10-17
+GET /temperatures?range=month&date=2026-09-15
+GET /temperatures?range=year&date=2025-06-01
+```
+
+The selected date determines the day, containing month, or containing year:
+
+| Range | Response (unchanged) |
+| --- | --- |
+| `day` | Raw readings in ascending timestamp order: `id`, `timestamp`, `solar`, `pump`, `security`, `rel` |
+| `month` | Daily averages in ascending date order: `date` (`YYYY-MM-DD`), `avg_solar`, `avg_pump`, `avg_security`, `avg_rel` |
+| `year` | Monthly averages in ascending month order: `month` (`YYYY-MM`), the same `avg_*` fields |
+
+No readings returns `[]` with HTTP 200. Malformed/impossible dates, duplicate date parameters, and unsupported ranges return HTTP 400. A date-only value is interpreted in the **server's local timezone**, preserving existing day/month/year boundaries and daylight-saving behavior; it is not parsed as UTC midnight. Configure the server timezone consistently with the installation's calendar. Clients in a different timezone may display different clock times for raw timestamps.
+
+The test suite exercises the real Nest controller and service with a mocked TypeORM repository; it does not connect to MySQL or modify machine settings/status files. Run `npm test -- --runInBand` and `npm run build` to verify changes.
+
 ## Project setup
 
 ```bash

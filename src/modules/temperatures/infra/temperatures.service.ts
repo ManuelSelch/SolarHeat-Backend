@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Between, Repository } from 'typeorm';
 import { Temperature } from '../temperature.entity';
 import { CreateTemperatureDto } from '../api/create-temperature.dto';
-import { startOfDay, endOfDay, startOfMonth, endOfMonth, startOfYear, endOfYear } from 'date-fns';
+import { startOfDay, endOfDay, startOfMonth, endOfMonth, startOfYear, endOfYear, parse, isValid, format } from 'date-fns';
 
 @Injectable()
 export class TemperaturesService {
@@ -12,12 +12,12 @@ export class TemperaturesService {
     private repo: Repository<Temperature>,
   ) {}
 
-  async findFiltered(range: 'day' | 'month' | 'year'): Promise<Temperature[]> {
-    const now = new Date();
+  async findFiltered(range: 'day' | 'month' | 'year', date?: string): Promise<Temperature[]> {
+    const referenceDate = this.parseReferenceDate(date);
 
     if(range === 'day') {
         return this.repo.find({
-            where: { timestamp: Between(startOfDay(now), endOfDay(now)) },
+            where: { timestamp: Between(startOfDay(referenceDate), endOfDay(referenceDate)) },
             order: { timestamp: 'ASC' }
         })
     }
@@ -35,8 +35,8 @@ export class TemperaturesService {
                 'AVG(temperature.rel) as avg_rel',
             ])
             .where('temperature.timestamp BETWEEN :start AND :end', {
-                start: startOfMonth(now),
-                end: endOfMonth(now),
+                start: startOfMonth(referenceDate),
+                end: endOfMonth(referenceDate),
             })
             .groupBy('date')
             .orderBy('date', 'ASC')
@@ -54,8 +54,8 @@ export class TemperaturesService {
             'AVG(temperature.rel) as avg_rel',
         ])
         .where('temperature.timestamp BETWEEN :start AND :end', {
-            start: startOfYear(now),
-            end: endOfYear(now),
+            start: startOfYear(referenceDate),
+            end: endOfYear(referenceDate),
         })
         .groupBy('month')
         .orderBy('month', 'ASC')
@@ -63,6 +63,21 @@ export class TemperaturesService {
     }
 
     throw new BadRequestException("invalid range: " + range)
+  }
+
+  private parseReferenceDate(date?: string): Date {
+    if (date === undefined) return new Date();
+    const message = 'date must be a valid YYYY-MM-DD calendar date (years 1000-9999)';
+    if (typeof date !== 'string' || !/^[1-9]\d{3}-\d{2}-\d{2}$/.test(date)) {
+      throw new BadRequestException(message);
+    }
+    // Parse in the server's local timezone, matching the existing period bounds.
+    // new Date('YYYY-MM-DD') would parse as UTC and can select the previous day.
+    const referenceDate = parse(date, 'yyyy-MM-dd', new Date());
+    if (!isValid(referenceDate) || format(referenceDate, 'yyyy-MM-dd') !== date) {
+      throw new BadRequestException(message);
+    }
+    return referenceDate;
   }
 
   findOne(id: number): Promise<Temperature | null> {

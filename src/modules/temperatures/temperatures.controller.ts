@@ -20,8 +20,11 @@ export class TemperaturesController {
     ) {}
 
     @Get("/")
-    async findAll(@Query('range') range: 'day' | 'month' | 'year' = 'day',): Promise<Temperature[]> {
-        return await this.temperaturesService.findFiltered(range);
+    async findAll(
+        @Query('range') range: 'day' | 'month' | 'year' = 'day',
+        @Query('date') date?: string,
+    ): Promise<Temperature[]> {
+        return await this.temperaturesService.findFiltered(range, date);
     }
 
     @Post("/")
