@@ -15,6 +15,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
         username: configService.get('DB_USER'),
         password: configService.get('DB_PASS'),
         database: configService.get('DB_NAME'),
+        // Treat MySQL DATETIME values as UTC instants; API serialization stays ISO UTC.
+        timezone: 'Z',
         autoLoadEntities: true,
         synchronize: configService.get('NODE_ENV') !== 'production',
       }),
