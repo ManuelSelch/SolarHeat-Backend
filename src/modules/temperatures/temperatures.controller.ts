@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Post, Query } from '@nestjs/common';
 import { CreateTemperatureDto } from './api/create-temperature.dto';
 import * as fs from 'fs/promises';
-import { TemperaturesService } from './infra/temperatures.service';
+import { TemperaturesService, type TemperatureHistoryResponse } from './infra/temperatures.service';
 
 async function readStatus(): Promise<Status> {
     const raw = await fs.readFile("./data/status.json", 'utf8');
@@ -23,7 +23,7 @@ export class TemperaturesController {
     async findAll(
         @Query('range') range: 'day' | 'month' | 'year' = 'day',
         @Query('date') date?: string,
-    ): Promise<Temperature[]> {
+    ): Promise<TemperatureHistoryResponse[]> {
         return await this.temperaturesService.findFiltered(range, date);
     }
 
