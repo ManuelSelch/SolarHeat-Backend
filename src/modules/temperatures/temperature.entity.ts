@@ -5,18 +5,18 @@ export class Temperature {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column('int')
   solar: number;
 
-  @Column()
+  @Column('int')
   pump: number;
 
-  @Column()
+  @Column('int')
   security: number;
 
-  @Column()
+  @Column('int')
   rel: number;
 
-  @Column()
+  @Column('datetime')
   timestamp: Date;
 }
