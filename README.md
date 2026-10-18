@@ -86,6 +86,20 @@ $ npm run test:cov
 
 ## Deployment
 
+The production build explicitly compiles only `src/` into `dist/`; the entry point is `dist/main.js`. Incremental compilation is disabled for this build because Nest clears the output directory before compiling.
+
+After pulling an update on the server, from the backend repository directory:
+
+```bash
+npm ci
+npm run build
+test -f dist/main.js
+pm2 restart solar-heat-backend
+pm2 logs solar-heat-backend --lines 30
+```
+
+If PM2 reports `Cannot find module .../dist/main`, ensure the build completed successfully and `dist/main.js` exists before restarting. Avoid running multiple builds/start commands concurrently against the same checkout because they share and clear `dist/`.
+
 When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
 
 If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
